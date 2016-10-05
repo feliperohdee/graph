@@ -21,7 +21,9 @@ const respondGraphQl = (req, res) => {
 		query
 	} = req.body;
 
-	return graphql(schema, query)
+	const context = {};
+
+	return graphql(schema, query, null, context)
 		.then(result => {
 			if (result.errors) {
 				result = result.errors.map(error => {

@@ -26,7 +26,9 @@ var respondGraphQl = function respondGraphQl(req, res) {
 	var query = req.body.query;
 
 
-	return (0, _graphql.graphql)(_schema2.default, query).then(function (result) {
+	var context = {};
+
+	return (0, _graphql.graphql)(_schema2.default, query, null, context).then(function (result) {
 		if (result.errors) {
 			result = result.errors.map(function (error) {
 				return _defineProperty({}, error.name, error.message);
