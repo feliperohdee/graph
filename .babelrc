@@ -1,0 +1,40 @@
+{
+	"presets": [
+		"babel-preset-es2015",
+		"react",
+		"stage-0"
+	],
+	"plugins": [
+		["module-alias", [{
+			"src": "./src/api",
+			"expose": "api"
+		}, {
+			"src": "./src/bin",
+			"expose": "bin"
+		}, {
+			"src": "./src/components",
+			"expose": "components"
+		}, {
+			"src": "./src/config",
+			"expose": "config"
+		}, {
+			"src": "./src/libs",
+			"expose": "libs"
+		}, {
+			"src": "./src/middlewares",
+			"expose": "middlewares"
+		}, {
+			"src": "./src/models",
+			"expose": "models"
+		}, {
+			"src": "./src/routes",
+			"expose": "routes"
+		}, {
+			"src": "./src/statics",
+			"expose": "statics"
+		}, {
+			"src": "./src/Utils",
+			"expose": "Utils"
+		}]]
+	]
+}

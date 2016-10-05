@@ -1,0 +1,25 @@
+{
+  "name": "graph",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev-js": "node_modules/.bin/babel src --watch --out-dir __build__",
+    "start": "node_modules/.bin/concurrently --kill-others 'npm run dev-js' 'node_modules/.bin/nodemon __build__/index.js --delay 500ms'"
+  },
+  "author": "Felipe Rohde",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-cli": "^6.14.0",
+    "babel-plugin-module-alias": "^1.6.0",
+    "babel-preset-es2015": "^6.14.0",
+    "babel-preset-react": "^6.16.0",
+    "babel-preset-stage-0": "^6.16.0",
+    "concurrently": "^2.2.0",
+    "nodemon": "^1.10.2"
+  },
+  "dependencies": {
+    "graphql": "^0.7.1",
+    "restify": "^4.1.1"
+  }
+}
