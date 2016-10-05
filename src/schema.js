@@ -45,14 +45,14 @@ const MemberType = new GraphQLObjectType({
             type: new GraphQLList(TicketType),
             resolve(obj) {
                 return Observable.of([{
-                    id: 3,
-                    memberId: obj.id
-                }, {
-                    id: 4,
-                    memberId: obj.id
-                }])
-                .delay(1000)
-                .toPromise();
+                        id: 3,
+                        memberId: obj.id
+                    }, {
+                        id: 4,
+                        memberId: obj.id
+                    }])
+                    .delay(1000)
+                    .toPromise();
             }
         }
     }
@@ -82,9 +82,27 @@ const ProjectType = new GraphQLObjectType({
     }
 });
 
-const query = new GraphQLObjectType({
-    name: 'RootType',
+const TagsType = new GraphQLObjectType({
+    name: 'TagsType',
     fields: {
+        tags: {
+            type: new GraphQLList(GraphQLString),
+            resolve() {
+                return ['tag1', 'tag2'];
+            }
+        }
+    }
+});
+
+const query = new GraphQLObjectType({
+    name: 'QueryType',
+    fields: {
+        tags: {
+            type: new GraphQLList(GraphQLString),
+            resolve() {
+                return ['tag1', 'tag2'];
+            }
+        },
         projects: {
             type: new GraphQLList(ProjectType),
             resolve(obj, args, context, ast) {
@@ -109,8 +127,28 @@ const query = new GraphQLObjectType({
     }
 });
 
+const mutation = new GraphQLObjectType({
+    name: 'MutationType',
+    fields: {
+        setId: {
+            type: MemberType,
+            args: {
+                id: {
+                    type: GraphQLInt
+                }
+            },
+            resolve: (obj, args) => {
+                return {
+                    id: args.id
+                }
+            }
+        }
+    }
+});
+
 const schema = new GraphQLSchema({
-    query
+    query,
+    mutation
 });
 
 export default schema;

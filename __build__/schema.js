@@ -86,9 +86,27 @@ var ProjectType = new _graphql.GraphQLObjectType({
     }
 });
 
-var query = new _graphql.GraphQLObjectType({
-    name: 'RootType',
+var TagsType = new _graphql.GraphQLObjectType({
+    name: 'TagsType',
     fields: {
+        tags: {
+            type: new _graphql.GraphQLList(_graphql.GraphQLString),
+            resolve: function resolve() {
+                return ['tag1', 'tag2'];
+            }
+        }
+    }
+});
+
+var query = new _graphql.GraphQLObjectType({
+    name: 'QueryType',
+    fields: {
+        tags: {
+            type: new _graphql.GraphQLList(_graphql.GraphQLString),
+            resolve: function resolve() {
+                return ['tag1', 'tag2'];
+            }
+        },
         projects: {
             type: new _graphql.GraphQLList(ProjectType),
             resolve: function resolve(obj, args, context, ast) {
@@ -115,8 +133,28 @@ var query = new _graphql.GraphQLObjectType({
     }
 });
 
+var mutation = new _graphql.GraphQLObjectType({
+    name: 'MutationType',
+    fields: {
+        setId: {
+            type: MemberType,
+            args: {
+                id: {
+                    type: _graphql.GraphQLInt
+                }
+            },
+            resolve: function resolve(obj, args) {
+                return {
+                    id: args.id
+                };
+            }
+        }
+    }
+});
+
 var schema = new _graphql.GraphQLSchema({
-    query: query
+    query: query,
+    mutation: mutation
 });
 
 exports.default = schema;
