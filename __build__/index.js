@@ -4,10 +4,6 @@ var _schema = require('./schema');
 
 var _schema2 = _interopRequireDefault(_schema);
 
-var _first = require('./first');
-
-var _first2 = _interopRequireDefault(_first);
-
 var _graphql = require('graphql');
 
 var _restify = require('restify');

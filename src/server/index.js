@@ -1,5 +1,4 @@
 import schema from './schema';
-import query from './first';
 import {
 	graphql
 } from 'graphql';

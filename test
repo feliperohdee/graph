@@ -1,0 +1,26 @@
+query Friends($id: ID = 98) {
+  tags,
+  projects {
+    __typename
+    id
+    name
+    members {
+      ...members
+    }
+  }
+  some: project(id: $id) {
+    name
+    members {
+      ...members
+    }
+  }
+}
+
+fragment members on MemberType {
+  id
+  name
+  tickets {
+    id
+    message
+  }
+}
