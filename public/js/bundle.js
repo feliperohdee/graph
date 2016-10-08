@@ -13,23 +13,43 @@ webpackJsonp([0],{
 
 	'use strict';
 	
-	var _react = __webpack_require__(170);
+	var _react = __webpack_require__(2);
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _reactDom = __webpack_require__(2);
+	var _reactDom = __webpack_require__(35);
 	
 	var _reactDom2 = _interopRequireDefault(_reactDom);
 	
-	var _Graphi = __webpack_require__(167);
+	var _components = __webpack_require__(173);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	_reactDom2.default.render(_react2.default.createElement(_Graphi.Graphi, null), document.getElementById('graphiql'));
+	_reactDom2.default.render(_react2.default.createElement(_components.Graphi, null), document.getElementById('app'));
 
 /***/ },
 
-/***/ 167:
+/***/ 173:
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	exports.Graphi = undefined;
+	
+	var _Graphi = __webpack_require__(174);
+	
+	var _Graphi2 = _interopRequireDefault(_Graphi);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	exports.Graphi = _Graphi2.default;
+
+/***/ },
+
+/***/ 174:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -37,19 +57,18 @@ webpackJsonp([0],{
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	exports.Graphi = undefined;
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _graphiql = __webpack_require__(168);
+	var _graphiql = __webpack_require__(175);
 	
 	var _graphiql2 = _interopRequireDefault(_graphiql);
 	
-	var _isomorphicFetch = __webpack_require__(296);
+	var _isomorphicFetch = __webpack_require__(297);
 	
 	var _isomorphicFetch2 = _interopRequireDefault(_isomorphicFetch);
 	
-	var _react = __webpack_require__(170);
+	var _react = __webpack_require__(2);
 	
 	var _react2 = _interopRequireDefault(_react);
 	
@@ -64,15 +83,18 @@ webpackJsonp([0],{
 	// Parse the search string to get url parameters.
 	var search = window.location.search;
 	
-	var Graphi = exports.Graphi = function (_Component) {
-	    _inherits(Graphi, _Component);
+	var _class = function (_Component) {
+	    _inherits(_class, _Component);
 	
-	    function Graphi(props) {
-	        _classCallCheck(this, Graphi);
+	    function _class(props) {
+	        _classCallCheck(this, _class);
 	
-	        var _this = _possibleConstructorReturn(this, (Graphi.__proto__ || Object.getPrototypeOf(Graphi)).call(this, props));
+	        var _this = _possibleConstructorReturn(this, (_class.__proto__ || Object.getPrototypeOf(_class)).call(this, props));
 	
 	        _this.parameters = {};
+	        _this.state = {
+	            uri: localStorage.getItem('graphiql:uri')
+	        };
 	
 	
 	        search.substr(1).split('&').forEach(function (entry) {
@@ -95,7 +117,7 @@ webpackJsonp([0],{
 	        return _this;
 	    }
 	
-	    _createClass(Graphi, [{
+	    _createClass(_class, [{
 	        key: 'onEditQuery',
 	        value: function onEditQuery(newQuery) {
 	            this.parameters.query = newQuery;
@@ -116,10 +138,12 @@ webpackJsonp([0],{
 	    }, {
 	        key: 'updateURL',
 	        value: function updateURL() {
-	            var newSearch = '?' + Object.keys(parameters).filter(function (key) {
-	                return Boolean(parameters[key]);
+	            var _this2 = this;
+	
+	            var newSearch = '?' + Object.keys(this.parameters).filter(function (key) {
+	                return Boolean(_this2.parameters[key]);
 	            }).map(function (key) {
-	                return encodeURIComponent(key) + ' = ' + encodeURIComponent(parameters[key]);
+	                return encodeURIComponent(key) + ' = ' + encodeURIComponent(_this2.parameters[key]);
 	            }).join('&');
 	
 	            history.replaceState(null, null, newSearch);
@@ -130,14 +154,16 @@ webpackJsonp([0],{
 	    }, {
 	        key: 'fetcher',
 	        value: function fetcher(graphQLParams) {
-	            return (0, _isomorphicFetch2.default)(window.location.origin, {
+	            var uri = this.state.uri;
+	
+	
+	            return (0, _isomorphicFetch2.default)(uri.indexOf('http') >= 0 ? uri : 'http://' + uri, {
 	                method: 'post',
 	                headers: {
 	                    'Accept': 'application/json',
 	                    'Content-Type': 'application/json'
 	                },
-	                body: JSON.stringify(graphQLParams),
-	                credentials: 'include'
+	                body: JSON.stringify(graphQLParams)
 	            }).then(function (response) {
 	                return response.text();
 	            }).then(function (responseBody) {
@@ -149,21 +175,69 @@ webpackJsonp([0],{
 	            });
 	        }
 	    }, {
+	        key: 'setUri',
+	        value: function setUri(e) {
+	            if (e.keyCode !== 13) {
+	                return;
+	            }
+	
+	            var uri = e.target.value;
+	
+	            this.setState({
+	                uri: uri
+	            }, function () {
+	                localStorage.setItem('graphiql:uri', uri);
+	            });
+	        }
+	    }, {
+	        key: 'exit',
+	        value: function exit() {
+	            this.setState({
+	                uri: null
+	            }, function () {
+	                localStorage.removeItem('graphiql:uri');
+	                localStorage.removeItem('graphiql:variables');
+	                localStorage.removeItem('graphiql:variableEditorHeight');
+	                localStorage.removeItem('graphiql:query');
+	                localStorage.removeItem('graphiql:operationName');
+	                localStorage.removeItem('graphiql:editorFlex');
+	                localStorage.removeItem('graphiql:docExplorerWidth');
+	            });
+	        }
+	    }, {
 	        key: 'render',
 	        value: function render() {
-	            return _react2.default.createElement(_graphiql2.default, {
-	                fetcher: this.fetcher.bind(this),
-	                query: this.parameters.query,
-	                variables: this.parameters.variables,
-	                operationName: this.parameters.operationName,
-	                onEditQuery: this.onEditQuery.bind(this),
-	                onEditVariables: this.onEditVariables.bind(this),
-	                onEditOperationName: this.onEditOperationName.bind(this) });
+	            var uri = this.state.uri;
+	
+	
+	            return uri ? _react2.default.createElement(
+	                'section',
+	                null,
+	                _react2.default.createElement(
+	                    'button',
+	                    { className: 'exit-button', onClick: this.exit.bind(this) },
+	                    'Exit'
+	                ),
+	                _react2.default.createElement(_graphiql2.default, {
+	                    fetcher: this.fetcher.bind(this),
+	                    query: this.parameters.query,
+	                    variables: this.parameters.variables,
+	                    operationName: this.parameters.operationName,
+	                    onEditQuery: this.onEditQuery.bind(this),
+	                    onEditVariables: this.onEditVariables.bind(this),
+	                    onEditOperationName: this.onEditOperationName.bind(this) })
+	            ) : _react2.default.createElement(
+	                'section',
+	                { className: 'uri-input' },
+	                _react2.default.createElement('input', { type: 'text', placeholder: 'GraphQL Server URI (like: localhost:3000/graphql)', onKeyUp: this.setUri.bind(this) })
+	            );
 	        }
 	    }]);
 
-	    return Graphi;
+	    return _class;
 	}(_react.Component);
+
+	exports.default = _class;
 
 /***/ }
 

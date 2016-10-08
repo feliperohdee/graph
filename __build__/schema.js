@@ -82,13 +82,7 @@ var ProjectType = new _graphql.GraphQLObjectType({
                     id: 2
                 }];
             }
-        }
-    }
-});
-
-var TagsType = new _graphql.GraphQLObjectType({
-    name: 'TagsType',
-    fields: {
+        },
         tags: {
             type: new _graphql.GraphQLList(_graphql.GraphQLString),
             resolve: function resolve() {
@@ -98,13 +92,29 @@ var TagsType = new _graphql.GraphQLObjectType({
     }
 });
 
+var TagType = new _graphql.GraphQLObjectType({
+    name: 'TagType',
+    fields: {
+        label: {
+            type: _graphql.GraphQLString,
+            resolve: function resolve(obj, args) {
+                return 'tags ' + args.id;
+            }
+        }
+    }
+});
+
 var query = new _graphql.GraphQLObjectType({
     name: 'QueryType',
     fields: {
         tags: {
-            type: new _graphql.GraphQLList(_graphql.GraphQLString),
+            type: new _graphql.GraphQLList(TagType),
             resolve: function resolve() {
-                return ['tag1', 'tag2'];
+                return [{
+                    label: 'tag 1'
+                }, {
+                    label: 'tag 2'
+                }];
             }
         },
         projects: {

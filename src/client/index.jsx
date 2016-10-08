@@ -2,6 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {
     Graphi
-} from './Graphi';
+} from './components';
 
-ReactDOM.render(<Graphi/>, document.getElementById('graphiql'));
+ReactDOM.render(<Graphi/>, document.getElementById('app'));

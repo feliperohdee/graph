@@ -11,18 +11,24 @@ import {
 
 const server = createServer();
 const statics = serveStatic({
-	directory: process.cwd(),
+	directory: `${process.cwd()}/public`,
 	default: 'index.html'
 });
 
 const respondGraphQl = (req, res) => {
-	const {
-		query
+	let {
+		query,
+		variables
 	} = req.body;
 
+	const root = {};
 	const context = {};
 
-	return graphql(schema, query, null, context)
+	if(typeof variables === 'string'){
+		variables = JSON.parse(variables);
+	}
+
+	return graphql(schema, query, root, context, variables)
 		.then(result => {
 			if (result.errors) {
 				result = result.errors.map(error => {
@@ -38,9 +44,17 @@ const respondGraphQl = (req, res) => {
 
 server.use(queryParser());
 server.use(bodyParser());
-server.get(/\/public\/?.*/, statics);
-server.get('/', respondGraphQl);
-server.post('/', respondGraphQl);
+server.use((req, res, next) => {
+	res.header('Access-Control-Allow-Origin', '*');
+	res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH');
+	res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+
+	next();
+});
+
+server.get('/graphql', respondGraphQl);
+server.post('/graphql', respondGraphQl);
+server.get(/\/?.*/, statics);
 
 server.listen(process.env.PORT || 3000, () => {
 	console.log('%s listening at %s', server.name, server.url);

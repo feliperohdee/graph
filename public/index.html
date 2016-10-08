@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <title>GraphQl Playground</title>
         <style>
             body {
                 height: 100%;
@@ -9,16 +10,54 @@
                 overflow: hidden;
             }
 
-            #graphiql {
+            #app,
+            #app > section {
                 height: 100vh;
             }
+
+            .uri-input{
+                height: 100vh;
+                display: -webkit-flex;
+                display: -moz-flex;
+                display: -ms-flex;
+                display: -o-flex;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .uri-input input {
+                padding: 10px;
+                width: 350px;
+            }
+
+            .exit-button{
+                background: #fdfdfd;
+                background: -webkit-linear-gradient(#fbfbfb, #f8f8f8);
+                background: linear-gradient(#fbfbfb, #f8f8f8);
+                border-width: 0.5px;
+                border-style: solid;
+                border-color: #d3d3d3 #d0d0d0 #bababa;
+                border-radius: 4px;
+                box-shadow: 0 1px 1px -1px rgba(0, 0, 0, 0.13), inset 0 1px #fff;
+                color: #444;
+                cursor: pointer;
+                display: inline-block;
+                margin: 0 5px 0;
+                padding: 2px 8px 4px;
+                text-decoration: none;
+                position: absolute;
+                top: 12px;
+                left: 238px;
+                font-size: 13px;
+            }
         </style>
-        <link rel="stylesheet" href="./public/css/graphiql.css" />
+        <link rel="stylesheet" href="./css/graphiql.css" />
     </head>
     <body>
-        <div id="graphiql">Loading...</div>
-        <script src="./public/js/common.js"></script>
-        <script src="./public/js/vendor.js"></script>
-        <script src="./public/js/bundle.js"></script>
+        <div id="app">Loading...</div>
+        <script src="./js/common.js"></script>
+        <script src="./js/vendor.js"></script>
+        <script src="./js/bundle.js"></script>
     </body>
 </html>

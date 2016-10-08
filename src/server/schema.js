@@ -78,13 +78,7 @@ const ProjectType = new GraphQLObjectType({
                     id: 2
                 }];
             }
-        }
-    }
-});
-
-const TagsType = new GraphQLObjectType({
-    name: 'TagsType',
-    fields: {
+        },
         tags: {
             type: new GraphQLList(GraphQLString),
             resolve() {
@@ -94,13 +88,29 @@ const TagsType = new GraphQLObjectType({
     }
 });
 
+const TagType = new GraphQLObjectType({
+    name: 'TagType',
+    fields: {
+        label: {
+            type: GraphQLString,
+            resolve(obj, args) {
+                return `tags ${args.id}`;
+            }
+        }
+    }
+});
+
 const query = new GraphQLObjectType({
     name: 'QueryType',
     fields: {
         tags: {
-            type: new GraphQLList(GraphQLString),
+            type: new GraphQLList(TagType),
             resolve() {
-                return ['tag1', 'tag2'];
+                return [{
+                    label: 'tag 1'
+                }, {
+                    label: 'tag 2'
+                }];
             }
         },
         projects: {
