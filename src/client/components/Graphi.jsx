@@ -4,73 +4,50 @@ import React, {
     Component
 } from 'react';
 
-// Parse the search string to get url parameters.
-const search = window.location.search;
-
 export default class extends Component {
     parameters = {};
     state = {
-        uri: localStorage.getItem('graphiql:uri')
+        uri: localStorage.getItem('graphiql:uri') || '',
+        token: localStorage.getItem('graphiql:token'),
+        showEditor: localStorage.getItem('graphiql:showEditor') === 'true'
     }
 
     constructor(props) {
         super(props);
-
-        search
-            .substr(1)
-            .split('&')
-            .forEach(entry => {
-                const eq = entry.indexOf('=');
-
-                if (eq >= 0) {
-                    this.parameters[decodeURIComponent(entry.slice(0, eq))] = decodeURIComponent(entry.slice(eq + 1));
-                }
-            });
-
-        // if variables was provided, try to format it.
-        if (this.parameters.variables) {
-            try {
-                this.parameters.variables = JSON.stringify(JSON.parse(this.parameters.variables), null, 2);
-            } catch (e) {
-                // Do nothing, we want to display the invalid JSON as a string, rather
-                // than present an error.
-            }
-        }
     }
 
     onEditQuery(newQuery) {
         this.parameters.query = newQuery;
-        this.updateURL();
     }
 
     onEditVariables(newVariables) {
         this.parameters.variables = newVariables;
-        this.updateURL();
     }
 
     onEditOperationName(newOperationName) {
         this.parameters.operationName = newOperationName;
-        this.updateURL();
-    }
-
-    updateURL() {
-        const newSearch = '?' + Object.keys(this.parameters)
-            .filter(key => {
-                return Boolean(this.parameters[key]);
-            }).map(key => {
-                return `${encodeURIComponent(key)} = ${encodeURIComponent(this.parameters[key])}`;
-            }).join('&');
-
-        history.replaceState(null, null, newSearch);
     }
 
     // Defines a GraphQL fetcher using the fetch API.
     fetcher(graphQLParams) {
         const {
-            uri
+            uri,
+            token
         } = this.state;
 
-        return fetch(uri.indexOf('http') >= 0 ? uri : `http://${uri}`, {
+        let url = uri.indexOf('http') >= 0 ? uri : `http://${uri}`;
+        let headers = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        };
+
+        if (token) {
+            url += `?token=${token}`;
+
+            headers['Authorization'] = token;
+        }
+
+        return fetch(url, {
                 method: 'post',
                 headers: {
                     'Accept': 'application/json',
@@ -89,10 +66,6 @@ export default class extends Component {
     }
 
     setUri(e) {
-        if(e.keyCode !== 13){
-            return;
-        }
-
         const uri = e.target.value;
 
         this.setState({
@@ -102,15 +75,37 @@ export default class extends Component {
         });
     }
 
-    exit(){
+    setToken(e) {
+        const token = e.target.value;
+
         this.setState({
-            uri: null
+            token
         }, () => {
-            localStorage.removeItem('graphiql:uri');
-            localStorage.removeItem('graphiql:variables');
+            localStorage.setItem('graphiql:token', token);
+        });
+    }
+
+    onKeyDown(e){
+        const isEnter = e.keyCode === 13;
+        const {
+            uri
+        } = this.state;
+
+        this.setState({
+            showEditor: uri && isEnter
+        }, () => {
+            localStorage.setItem('graphiql:showEditor', uri && isEnter);
+        });
+    }
+
+    exit() {
+        this.setState({
+            token: null,
+            showEditor: false
+        }, () => {
+            localStorage.removeItem('graphiql:token');
+            localStorage.removeItem('graphiql:showEditor');
             localStorage.removeItem('graphiql:variableEditorHeight');
-            localStorage.removeItem('graphiql:query');
-            localStorage.removeItem('graphiql:operationName');
             localStorage.removeItem('graphiql:editorFlex');
             localStorage.removeItem('graphiql:docExplorerWidth');
         });
@@ -118,11 +113,12 @@ export default class extends Component {
 
     render() {
         const {
+            showEditor,
             uri
         } = this.state;
 
-        return uri ? (
-                <section>
+        return showEditor ? (
+            <section>
                     <button className="exit-button" onClick={::this.exit}>Exit</button>
                     <GraphiQL 
                         fetcher={::this.fetcher}
@@ -133,10 +129,13 @@ export default class extends Component {
                         onEditVariables={::this.onEditVariables}
                         onEditOperationName={::this.onEditOperationName}/>
                 </section>
-            ) : (
-                <section className="uri-input">
-                    <input type="text" placeholder="GraphQL Server URI (like: localhost:3000/graphql)" onKeyUp={::this.setUri}/>
+        ) : (
+            <section>
+                    <section className="input">
+                        <input type="text" placeholder="GraphQL Server URI (like: localhost:3000/graphql)" value={uri} onChange={::this.setUri} onKeyDown={::this.onKeyDown}/>
+                        <input type="text" placeholder="Token" onChange={::this.setToken} onKeyDown={::this.onKeyDown}/>
+                    </section>
                 </section>
-            );
+        );
     }
 }

@@ -17,11 +17,11 @@ webpackJsonp([0],{
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _reactDom = __webpack_require__(35);
+	var _reactDom = __webpack_require__(29);
 	
 	var _reactDom2 = _interopRequireDefault(_reactDom);
 	
-	var _components = __webpack_require__(173);
+	var _components = __webpack_require__(167);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -29,7 +29,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 173:
+/***/ 167:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -39,7 +39,7 @@ webpackJsonp([0],{
 	});
 	exports.Graphi = undefined;
 	
-	var _Graphi = __webpack_require__(174);
+	var _Graphi = __webpack_require__(168);
 	
 	var _Graphi2 = _interopRequireDefault(_Graphi);
 	
@@ -49,7 +49,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 174:
+/***/ 168:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -60,11 +60,11 @@ webpackJsonp([0],{
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _graphiql = __webpack_require__(175);
+	var _graphiql = __webpack_require__(169);
 	
 	var _graphiql2 = _interopRequireDefault(_graphiql);
 	
-	var _isomorphicFetch = __webpack_require__(297);
+	var _isomorphicFetch = __webpack_require__(292);
 	
 	var _isomorphicFetch2 = _interopRequireDefault(_isomorphicFetch);
 	
@@ -80,9 +80,6 @@ webpackJsonp([0],{
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	// Parse the search string to get url parameters.
-	var search = window.location.search;
-	
 	var _class = function (_Component) {
 	    _inherits(_class, _Component);
 	
@@ -93,27 +90,10 @@ webpackJsonp([0],{
 	
 	        _this.parameters = {};
 	        _this.state = {
-	            uri: localStorage.getItem('graphiql:uri')
+	            uri: localStorage.getItem('graphiql:uri') || '',
+	            token: localStorage.getItem('graphiql:token'),
+	            showEditor: localStorage.getItem('graphiql:showEditor') === 'true'
 	        };
-	
-	
-	        search.substr(1).split('&').forEach(function (entry) {
-	            var eq = entry.indexOf('=');
-	
-	            if (eq >= 0) {
-	                _this.parameters[decodeURIComponent(entry.slice(0, eq))] = decodeURIComponent(entry.slice(eq + 1));
-	            }
-	        });
-	
-	        // if variables was provided, try to format it.
-	        if (_this.parameters.variables) {
-	            try {
-	                _this.parameters.variables = JSON.stringify(JSON.parse(_this.parameters.variables), null, 2);
-	            } catch (e) {
-	                // Do nothing, we want to display the invalid JSON as a string, rather
-	                // than present an error.
-	            }
-	        }
 	        return _this;
 	    }
 	
@@ -121,32 +101,16 @@ webpackJsonp([0],{
 	        key: 'onEditQuery',
 	        value: function onEditQuery(newQuery) {
 	            this.parameters.query = newQuery;
-	            this.updateURL();
 	        }
 	    }, {
 	        key: 'onEditVariables',
 	        value: function onEditVariables(newVariables) {
 	            this.parameters.variables = newVariables;
-	            this.updateURL();
 	        }
 	    }, {
 	        key: 'onEditOperationName',
 	        value: function onEditOperationName(newOperationName) {
 	            this.parameters.operationName = newOperationName;
-	            this.updateURL();
-	        }
-	    }, {
-	        key: 'updateURL',
-	        value: function updateURL() {
-	            var _this2 = this;
-	
-	            var newSearch = '?' + Object.keys(this.parameters).filter(function (key) {
-	                return Boolean(_this2.parameters[key]);
-	            }).map(function (key) {
-	                return encodeURIComponent(key) + ' = ' + encodeURIComponent(_this2.parameters[key]);
-	            }).join('&');
-	
-	            history.replaceState(null, null, newSearch);
 	        }
 	
 	        // Defines a GraphQL fetcher using the fetch API.
@@ -154,10 +118,24 @@ webpackJsonp([0],{
 	    }, {
 	        key: 'fetcher',
 	        value: function fetcher(graphQLParams) {
-	            var uri = this.state.uri;
+	            var _state = this.state,
+	                uri = _state.uri,
+	                token = _state.token;
 	
 	
-	            return (0, _isomorphicFetch2.default)(uri.indexOf('http') >= 0 ? uri : 'http://' + uri, {
+	            var url = uri.indexOf('http') >= 0 ? uri : 'http://' + uri;
+	            var headers = {
+	                'Accept': 'application/json',
+	                'Content-Type': 'application/json'
+	            };
+	
+	            if (token) {
+	                url += '?token=' + token;
+	
+	                headers['Authorization'] = token;
+	            }
+	
+	            return (0, _isomorphicFetch2.default)(url, {
 	                method: 'post',
 	                headers: {
 	                    'Accept': 'application/json',
@@ -177,10 +155,6 @@ webpackJsonp([0],{
 	    }, {
 	        key: 'setUri',
 	        value: function setUri(e) {
-	            if (e.keyCode !== 13) {
-	                return;
-	            }
-	
 	            var uri = e.target.value;
 	
 	            this.setState({
@@ -190,16 +164,39 @@ webpackJsonp([0],{
 	            });
 	        }
 	    }, {
+	        key: 'setToken',
+	        value: function setToken(e) {
+	            var token = e.target.value;
+	
+	            this.setState({
+	                token: token
+	            }, function () {
+	                localStorage.setItem('graphiql:token', token);
+	            });
+	        }
+	    }, {
+	        key: 'onKeyDown',
+	        value: function onKeyDown(e) {
+	            var isEnter = e.keyCode === 13;
+	            var uri = this.state.uri;
+	
+	
+	            this.setState({
+	                showEditor: uri && isEnter
+	            }, function () {
+	                localStorage.setItem('graphiql:showEditor', uri && isEnter);
+	            });
+	        }
+	    }, {
 	        key: 'exit',
 	        value: function exit() {
 	            this.setState({
-	                uri: null
+	                token: null,
+	                showEditor: false
 	            }, function () {
-	                localStorage.removeItem('graphiql:uri');
-	                localStorage.removeItem('graphiql:variables');
+	                localStorage.removeItem('graphiql:token');
+	                localStorage.removeItem('graphiql:showEditor');
 	                localStorage.removeItem('graphiql:variableEditorHeight');
-	                localStorage.removeItem('graphiql:query');
-	                localStorage.removeItem('graphiql:operationName');
 	                localStorage.removeItem('graphiql:editorFlex');
 	                localStorage.removeItem('graphiql:docExplorerWidth');
 	            });
@@ -207,10 +204,12 @@ webpackJsonp([0],{
 	    }, {
 	        key: 'render',
 	        value: function render() {
-	            var uri = this.state.uri;
+	            var _state2 = this.state,
+	                showEditor = _state2.showEditor,
+	                uri = _state2.uri;
 	
 	
-	            return uri ? _react2.default.createElement(
+	            return showEditor ? _react2.default.createElement(
 	                'section',
 	                null,
 	                _react2.default.createElement(
@@ -228,8 +227,13 @@ webpackJsonp([0],{
 	                    onEditOperationName: this.onEditOperationName.bind(this) })
 	            ) : _react2.default.createElement(
 	                'section',
-	                { className: 'uri-input' },
-	                _react2.default.createElement('input', { type: 'text', placeholder: 'GraphQL Server URI (like: localhost:3000/graphql)', onKeyUp: this.setUri.bind(this) })
+	                null,
+	                _react2.default.createElement(
+	                    'section',
+	                    { className: 'input' },
+	                    _react2.default.createElement('input', { type: 'text', placeholder: 'GraphQL Server URI (like: localhost:3000/graphql)', value: uri, onChange: this.setUri.bind(this), onKeyDown: this.onKeyDown.bind(this) }),
+	                    _react2.default.createElement('input', { type: 'text', placeholder: 'Token', onChange: this.setToken.bind(this), onKeyDown: this.onKeyDown.bind(this) })
+	                )
 	            );
 	        }
 	    }]);
