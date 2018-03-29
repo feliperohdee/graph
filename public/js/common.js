@@ -33972,6 +33972,17 @@
 	              _this2.props.onRunQuery();
 	            }
 	          },
+
+	          'Cmd-S': function CmdEnter() {
+	            if (_this2.props.onRunQuery) {
+	              _this2.props.onRunQuery();
+	            }
+	          },
+	          'Ctrl-S': function CtrlEnter() {
+	            if (_this2.props.onRunQuery) {
+	              _this2.props.onRunQuery();
+	            }
+	          },
 	
 	          // Editor improvements
 	          'Ctrl-Left': 'goSubwordLeft',
